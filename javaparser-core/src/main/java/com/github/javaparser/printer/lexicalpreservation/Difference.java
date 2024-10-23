@@ -547,13 +547,19 @@ public class Difference {
                 if (originalElements.size() > originalIndex && originalIndex > 0) {
                     if (originalElements.get(originalIndex).isWhiteSpace()
                             && originalElements.get(originalIndex - 1).isWhiteSpace()) {
-                        // However we do not want to do that when we are about to adding or removing elements
-                        // The intention is not very clear maybe it should clarify this with examples!
-                        // Are we to understand that we can only do this if there is a single modification to process
-                        // OR or if the next change is to keep the element
-                        if ((diffIndex + 1) == diffElements.size()
-                                || (diffElements.get(diffIndex + 1).isKept())) {
-                            originalElements.remove(originalIndex--);
+                        // The distinction between .isWhiteSpace() and .isNewLine() can be ambiguous,
+                        // which leads to newline characters incorrectly being treated as whitespace.
+                        // Therefore, we need to explicitly exclude elements that are newline characters from this condition check
+                        // to prevent unintended removal of newlines.
+                        if (!originalElements.get(originalIndex).isNewline()) {
+                            // However we do not want to do that when we are about to adding or removing elements
+                            // The intention is not very clear maybe it should clarify this with examples!
+                            // Are we to understand that we can only do this if there is a single modification to process
+                            // OR or if the next change is to keep the element
+                            if ((diffIndex + 1) == diffElements.size()
+                                    || (diffElements.get(diffIndex + 1).isKept())) {
+                                originalElements.remove(originalIndex--);
+                            }
                         }
                     }
                 }
